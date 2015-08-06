@@ -1,0 +1,1 @@
+packages=avahi-daemon,python,python-pip,python-virtualenv
