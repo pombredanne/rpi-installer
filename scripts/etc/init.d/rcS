@@ -7,10 +7,12 @@ preset=server
 packages=
 mirror=http://mirrordirector.raspbian.org/raspbian/
 release=wheezy
-hostname=pi
+hostname=sarti
 boot_volume_label=
 domainname=
 rootpw=raspbian
+user=pi
+userpw=raspberry
 cdebootstrap_cmdline=
 bootsize=+128M
 rootsize=
@@ -366,6 +368,8 @@ echo "  release = $release"
 echo "  hostname = $hostname"
 echo "  domainname = $domainname"
 echo "  rootpw = $rootpw"
+echo "  user = $user"
+echo "  userpw = $userpw"
 echo "  cdebootstrap_cmdline = $cdebootstrap_cmdline"
 echo "  bootsize = $bootsize"
 echo "  rootsize = $rootsize"
@@ -497,6 +501,12 @@ cdebootstrap-static --arch=armhf $cdebootstrap_cmdline $release /rootfs $mirror 
 echo "Configuring installed system:"
 echo -n "  Setting root password... "
 echo -n root:$rootpw | chroot /rootfs /usr/sbin/chpasswd || fail
+echo "OK"
+
+# allow default user login
+echo -n "  Creating default user... "
+chroot /rootfs useradd -m -s /bin/bash $user
+echo -n $user:$userpw | chroot /rootfs /usr/sbin/chpasswd || fail
 echo "OK"
 
 # default mounts
