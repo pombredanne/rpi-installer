@@ -1,5 +1,5 @@
 #!/usr/bin/python
-"""Script for building SD card image for Linux.
+"""Script for building SD card (Raspbian) image for Raspberry Pi.
 
 This module will build a netinstaller image for Raspberry Pi using latest
 Raspbian packages and flash it onto an SD card.
