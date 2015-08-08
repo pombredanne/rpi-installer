@@ -10,9 +10,11 @@ import os
 import subprocess
 import sys
 import time
+import argparse
+import logging
 
+log = None
 ok_ret_codes = [0]
-
 CRTIME = time.strftime('%Y%m%d')
 
 
@@ -21,6 +23,12 @@ class _AttributeString(str):
     @property
     def stdout(self):
         return str(self)
+
+
+def exit_if_failed(result):
+    if result.failed:
+        print('Failed!')
+        sys.exit(1)
 
 
 def question_yes_no(question, default='yes'):
@@ -36,8 +44,7 @@ def question_yes_no(question, default='yes'):
         raise ValueError('Invalid default answer: %s' % default)
 
     while 1:
-        print('%s %s ' % (question, prompt)),
-        choice = raw_input().lower()
+        choice = raw_input('%s %s ' % (question, prompt)).lower()
         if default and not choice:
             return default
         elif choice in valid:
@@ -90,7 +97,7 @@ def sudo(command, capture=False, shell=None):
 
 def run(command, capture=False, shell=None):
     """Execute a local command."""
-    print('[localhost] run: ' + command)
+    log.debug('[localhost] run: ' + command)
     if capture:
         out_stream = subprocess.PIPE
         err_stream = subprocess.PIPE
@@ -117,9 +124,12 @@ def run(command, capture=False, shell=None):
 
 def build():
     """Wrapper function around build scripts."""
-    run('./clean.sh')
-    run('./build.sh')
-    sudo('./buildroot.sh')
+    result = run('./clean.sh')
+    exit_if_failed(result)
+    result = run('./build.sh')
+    exit_if_failed(result)
+    result = sudo('./buildroot.sh')
+    exit_if_failed(result)
 
 
 def flash(dev):
@@ -128,15 +138,42 @@ def flash(dev):
     Args:
       dev: The device where the image will be flashed to.
     """
-    sudo('umount `mount | grep %s | cut -f1 -d " "`' % dev)
+    sudo("umount `mount | grep %s | cut -f1 -d ' '`" % dev)
     sha1 = run('git rev-parse --short @{0}', capture=True)
     img = 'raspbian-ua-netinst-%s-git%s.img' % (CRTIME, sha1)
-    sudo('dd if=%s of=%s bs=1M' % (img, dev))
-    run('sync')
+    print('Copying "%s" to "%s"...' % (img, dev))
+    result = sudo('dd if=%s of=%s bs=1M' % (img, dev))
+    exit_if_failed(result)
+    result = run('sync')
+    exit_if_failed(result)
+
+
+def parse_command_line():
+    """Configure and parse our command line flags."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--debug',
+        action='store_true',
+        default=False,
+        help='Enable debug messages.')
+    return parser.parse_args(sys.argv[1:])
+
+
+def configure_logging(debug=False):
+    """Configure the log global and message format."""
+    overall_level = logging.DEBUG if debug else logging.INFO
+    logging.basicConfig(
+        format='%(message)s',
+        level=overall_level)
+    global log
+    log = logging.getLogger('flashimage')
 
 
 def main():
     """First build, then flash it onto the selected device."""
+    config = parse_command_line()
+    configure_logging(debug=config.debug)
+    raw_input('Insert your SD card and press any key to continue...')
     build()
     dev = select_device()
     flash(dev)
