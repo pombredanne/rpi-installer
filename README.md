@@ -67,7 +67,9 @@ To flash your SD card on Linux:
 Replace _/dev/sdX_ with the real path to your SD card.
 
 ### Build SD card image for Linux
-The script `flash-image.py` will build the netinstaller image from downloaded debian packages and flash it onto your SD card.
+The script `flash-image.py` will build the netinstaller image from downloaded debian packages and flash it onto your SD card. Run the script and follow the instructions:
+
+    ./flash-image.py
 
 ## Installing
 In normal circumstances, you can just power on your Pi and cross your fingers.
