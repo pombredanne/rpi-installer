@@ -26,6 +26,7 @@ class _AttributeString(str):
 
 
 def exit_if_failed(result):
+    """Exit if result is failed."""
     if result.failed:
         print('Failed!')
         sys.exit(1)
