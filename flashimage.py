@@ -3,6 +3,24 @@
 
 This module will build a netinstaller image for Raspberry Pi using latest
 Raspbian packages and flash it onto an SD card.
+
+This is what basically happens:
+
+1) Download all required debian packages based on pre-defined list 
+   in 'update.sh'
+2) Initialize bootfs in 'build.sh':
+  - extract debian packages and copy 'boot' dir to 'bootfs'
+  - create 'config.txt' and 'cmdline.txt'
+3) Initialize rootfs in 'build.sh':
+  - make rootfs subdirs
+  - calcultate kernel module dependencies from pre-defined kernel
+    module list
+  - populate rootfs dirs
+  - copy scripts
+  - ...
+4) gzip rootfs and copy to bootfs
+5) create image from bootfs in buildroot.sh
+6) flash image to SD card.
 """
 
 from __future__ import print_function
