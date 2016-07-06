@@ -59,7 +59,7 @@ Description: Miscellaneous Raspberry Pi utilities
  This package contains various utilities for interacting with the Raspberry
  Pi's VideoCore IV.
 
- ...
+...
 ~~~
 
 Finally, all `.deb` files (found in `Packages`) matching the required packages are downloaded into the `packages` directory. As usual, their SHA256 checksums are also verified.
