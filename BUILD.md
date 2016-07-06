@@ -25,7 +25,7 @@ update.sh
 ---------
 This script downloads latest required Raspbian packages that will be used to build the installer. The packages to be downloaded are taken from a **pre-defined** list.
 
-First, the archive's public key is downloaded and after successful verification of its fingerprint imported into a newly created `gpg` keyring.
+First, the archive's public key is downloaded and after successful verification of its fingerprint, it is imported into a newly created `gpg` keyring.
 
 Next, the `Release` file is downloaded. Upon successful verification of its signature (`Release.gpg`) using the previously imported public key, the `firmware` and `main` package lists are looked up:
 ~~~
@@ -62,7 +62,7 @@ Description: Miscellaneous Raspberry Pi utilities
  ...
 ~~~
 
-Finally, all `.deb` files corresponding to the required packages are downloaded into the `packages` directory. As usual, their SHA256 checksums are also verified.
+Finally, all `.deb` files (found in `Packages`) matching the required packages are downloaded into the `packages` directory. As usual, their SHA256 checksums are also verified.
 
 build.sh
 ---------
